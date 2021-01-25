@@ -1,6 +1,8 @@
 import Chart from 'react-apexcharts';
 import React from 'react';
 import { language } from '../translations';
+import pl from '../translations/charts/pl.json';
+import en from '../translations/charts/en.json';
 
 const CryptoChart: React.FC = () => {
     const series = [
@@ -253,55 +255,7 @@ const CryptoChart: React.FC = () => {
     const options = {
         chart: {
             defaultLocale: language,
-            locales: [
-                {
-                    name: 'pl',
-                    options: {
-                        months: [
-                            'Styczeń',
-                            'Luty',
-                            'Marzec',
-                            'Kwiecień',
-                            'Maj',
-                            'Czerwiec',
-                            'Lipiec',
-                            'Sierpień',
-                            'Wrzesień',
-                            'Październik',
-                            'Listopad',
-                            'Grudzień',
-                        ],
-                        shortMonths: [
-                            'Sty',
-                            'Lut',
-                            'Mar',
-                            'Kwi',
-                            'Maj',
-                            'Cze',
-                            'Lip',
-                            'Sie',
-                            'Wrz',
-                            'Paź',
-                            'Lis',
-                            'Gru',
-                        ],
-                        days: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
-                        shortDays: ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'],
-                        toolbar: {
-                            exportToSVG: 'Pobierz SVG',
-                            exportToPNG: 'Pobierz PNG',
-                            exportToCSV: 'Pobierz CSV',
-                            menu: 'Menu',
-                            selection: 'Wybierz',
-                            selectionZoom: 'Wybierz lupę',
-                            zoomIn: 'Przybliż',
-                            zoomOut: 'Oddal',
-                            pan: 'Przesuwanie',
-                            reset: 'Resetuj',
-                        },
-                    },
-                },
-            ],
+            locales: [pl, en],
             type: 'candlestick',
         },
         xaxis: {
