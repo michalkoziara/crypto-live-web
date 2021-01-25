@@ -1,4 +1,9 @@
 {
+  "components.dashboardTitle": "Panel główny",
+  "components.loginButtonLabel": "Zaloguj się",
+  "components.loginTitle": "Logowanie",
+  "components.registrationButtonLabel": "Zarejestruj się",
+  "components.registrationTitle": "Rejestracja",
   "features.login.loginButtonLabel": "Zaloguj",
   "features.login.loginTitle": "Logowanie",
   "features.login.passwordHelperText": "Podaj hasło",

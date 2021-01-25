@@ -5,6 +5,15 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { Link, useLocation } from 'react-router-dom';
+import { defineMessages, useIntl } from 'react-intl';
+
+const translations = defineMessages({
+    loginTitle: 'Login',
+    registrationButtonLabel: 'Sign Up',
+    registrationTitle: 'Registration',
+    loginButtonLabel: 'Sign In',
+    dashboardTitle: 'Dashboard',
+});
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -19,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PageBar: React.FC = () => {
+    const intl = useIntl();
     const classes = useStyles();
 
     const location: string = useLocation().pathname;
@@ -27,21 +37,21 @@ const PageBar: React.FC = () => {
     let content: JSX.Element | null;
 
     if (location == '/login') {
-        title = 'Logowanie';
+        title = intl.formatMessage(translations.loginTitle);
         content = (
             <Button color="inherit" component={Link} to="/signup">
-                Zarejestruj się
+                {intl.formatMessage(translations.registrationButtonLabel)}
             </Button>
         );
     } else if (location == '/signup') {
-        title = 'Rejestracja';
+        title = intl.formatMessage(translations.registrationTitle);
         content = (
             <Button color="inherit" component={Link} to="/login">
-                Zaloguj się
+                {intl.formatMessage(translations.loginButtonLabel)}
             </Button>
         );
     } else {
-        title = 'Panel główny';
+        title = intl.formatMessage(translations.dashboardTitle);
         content = null;
     }
 

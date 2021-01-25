@@ -9,7 +9,7 @@ import { useIntl, defineMessages } from 'react-intl';
 
 /// Default translations.
 const translations = defineMessages({
-    signUpTitle: 'Registration',
+    signUpTitle: 'Sign Up',
     usernameLabel: 'Username',
     passwordLabel: 'Password',
     confirmPasswordLabel: 'Confirm a password',
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) =>
         submitButton: {
             marginTop: '24px',
         },
-        title: { textAlign: 'center' },
+        title: { textAlign: 'center', color: 'rgb(37,60,184)' },
         snackbar: {
             width: '100%',
             '& > * + *': {

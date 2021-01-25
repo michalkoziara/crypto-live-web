@@ -8,7 +8,7 @@ import { useIntl, defineMessages } from 'react-intl';
 
 /// Default translations.
 const translations = defineMessages({
-    loginTitle: 'Login',
+    loginTitle: 'Sign In',
     usernameLabel: 'Username',
     passwordLabel: 'Password',
     loginButtonLabel: 'Sign in',
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) =>
         root: {
             maxWidth: '450px',
             display: 'block',
-            margin: '0 auto',
+            margin: '10 auto',
         },
         textField: {
             '& > *': {
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) =>
         submitButton: {
             marginTop: '24px',
         },
-        title: { textAlign: 'center' },
+        title: { textAlign: 'center', color: 'rgb(37,60,184)' },
         snackbar: {
             width: '100%',
             '& > * + *': {

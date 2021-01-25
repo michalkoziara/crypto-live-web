@@ -1,12 +1,8 @@
 import Chart from 'react-apexcharts';
 import React from 'react';
-import PropTypes from 'prop-types';
+import { language } from '../translations';
 
-interface ICryptoChart {
-    coinName?: string;
-}
-
-const CryptoChart: React.FC<ICryptoChart> = ({ coinName }) => {
+const CryptoChart: React.FC = () => {
     const series = [
         {
             data: [
@@ -256,7 +252,7 @@ const CryptoChart: React.FC<ICryptoChart> = ({ coinName }) => {
 
     const options = {
         chart: {
-            defaultLocale: 'pl',
+            defaultLocale: language,
             locales: [
                 {
                     name: 'pl',
@@ -308,10 +304,6 @@ const CryptoChart: React.FC<ICryptoChart> = ({ coinName }) => {
             ],
             type: 'candlestick',
         },
-        title: {
-            text: 'Wykres ' + coinName,
-            align: 'left',
-        },
         xaxis: {
             type: 'datetime',
         },
@@ -323,10 +315,6 @@ const CryptoChart: React.FC<ICryptoChart> = ({ coinName }) => {
     };
 
     return <Chart options={options} series={series} type="candlestick" />;
-};
-
-CryptoChart.propTypes = {
-    coinName: PropTypes.string,
 };
 
 export default CryptoChart;
