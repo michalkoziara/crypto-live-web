@@ -3,10 +3,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './app/App';
 import reportWebVitals from './reportWebVitals';
+import { IntlProvider } from 'react-intl';
+import translations, { language } from './translations';
 
 ReactDOM.render(
     <React.StrictMode>
-        <App />
+        <IntlProvider locale={language} messages={translations[language]}>
+            <App />
+        </IntlProvider>
     </React.StrictMode>,
     document.getElementById('root'),
 );
