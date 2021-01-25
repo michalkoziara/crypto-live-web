@@ -1,17 +1,26 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 interface User {
     username: string;
     password: string;
 }
 
-export async function registerUser({ username, password }: User) {
+const registerUser = async ({ username, password }: User): Promise<AxiosResponse> => {
     const url = '/public/users/register';
 
     const content = 'username=' + username + '&password=' + password;
-    const result = await axios.post<string>(url, content, {
+    return await axios.post<string>(url, content, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
+};
 
-    return result;
-}
+const loginUser = async ({ username, password }: User): Promise<AxiosResponse> => {
+    const url = '/public/users/login';
+
+    const content = 'username=' + username + '&password=' + password;
+    return await axios.post<string>(url, content, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+};
+
+export { registerUser, loginUser };

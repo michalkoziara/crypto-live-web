@@ -21,7 +21,7 @@
   "features.signup.confirmPasswordValidationError": "Hasła nie są takie same!",
   "features.signup.passwordHelperText": "Co najmniej 8 znaków, jedna wielka oraz jedna mała litera, jeden znak specjalny oraz brak spacji.",
   "features.signup.passwordLabel": "Hasło",
-  "features.signup.passwordValidationError": "Podaj poprawne hasło! Hasło musi zawierać co najmniej osiem znaków, jedną wielka oraz jedna mała literę, jeden znak specjalny, oraz nie zawierać spacji!",
+  "features.signup.passwordValidationError": "Podaj poprawne hasło! Hasło musi zawierać co najmniej 8 znaków, jedną wielka oraz jedna mała literę, jeden znak specjalny, oraz nie zawierać spacji!",
   "features.signup.registrationButtonLabel": "Zarejestruj",
   "features.signup.signUpTitle": "Rejestracja",
   "features.signup.statusError": "Coś poszło nie tak. Proszę spróbować ponownie.",

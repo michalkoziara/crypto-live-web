@@ -21,7 +21,7 @@
   "features.signup.confirmPasswordValidationError": "Passwords must match!",
   "features.signup.passwordHelperText": "Acceptable passwords are at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one special character and no spaces.",
   "features.signup.passwordLabel": "Password",
-  "features.signup.passwordValidationError": "Please enter a valid password. Acceptable passwords are at least 7 characters long and contain at least one uppercase letter, one lowercase letter, one special character and no spaces!",
+  "features.signup.passwordValidationError": "Please enter a valid password. Acceptable passwords are at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one special character and no spaces!",
   "features.signup.registrationButtonLabel": "Sign Up",
   "features.signup.signUpTitle": "Sign Up",
   "features.signup.statusError": "Something went wrong. Please try again.",

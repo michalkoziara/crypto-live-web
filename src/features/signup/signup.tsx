@@ -6,6 +6,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import { registerUser } from '../../api/authentication';
 import { useIntl, defineMessages } from 'react-intl';
+import { useCookies } from 'react-cookie';
 
 /// Default translations.
 const translations = defineMessages({
@@ -19,7 +20,7 @@ const translations = defineMessages({
     passwordHelperText:
         'Acceptable passwords are at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one special character and no spaces.',
     passwordValidationError:
-        'Please enter a valid password. Acceptable passwords are at least 7 characters long and contain at least one uppercase letter, one lowercase letter, one special character and no spaces!',
+        'Please enter a valid password. Acceptable passwords are at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one special character and no spaces!',
     confirmPasswordHelperText: 'Re-enter password to confirm',
     confirmPasswordValidationError: 'Passwords must match!',
     confirmPasswordRequiredError: 'This field is required!',
@@ -74,6 +75,7 @@ interface IFormStatusProps {
 const SignUp: React.FunctionComponent = () => {
     const intl = useIntl();
     const classes = useStyles();
+    const [, setCookie] = useCookies(['token']);
 
     const formStatusProps: IFormStatusProps = {
         success: {
@@ -103,7 +105,7 @@ const SignUp: React.FunctionComponent = () => {
     const createNewUser = async (data: ISignUpForm) => {
         registerUser({ username: data.username, password: data.password })
             .then((value) => {
-                document.cookie = value.data;
+                setCookie('token', value.data, { path: '/', sameSite: 'strict', maxAge: 10 * 60 });
                 setFormStatus(formStatusProps.success);
             })
             .catch(() => setFormStatus(formStatusProps.error))
@@ -134,7 +136,9 @@ const SignUp: React.FunctionComponent = () => {
                 validationSchema={Yup.object().shape({
                     username: Yup.string().required(intl.formatMessage(translations.usernameValidationError)),
                     password: Yup.string()
-                        .matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()]).{8,20}\S$/)
+                        .matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()]).{8,20}\S$/, {
+                            message: intl.formatMessage(translations.passwordHelperText),
+                        })
                         .required(intl.formatMessage(translations.passwordValidationError)),
                     confirmPassword: Yup.string()
                         .required(intl.formatMessage(translations.confirmPasswordRequiredError))

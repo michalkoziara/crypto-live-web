@@ -15,7 +15,6 @@ const App: React.FC = () => {
     const defaultProtectedRouteProps: ProtectedRouteProps = {
         isAllowed: true,
         restrictedPath: '/login',
-        isAuthenticated: document.cookie.length > 0,
         authenticationPath: '/login',
     };
 

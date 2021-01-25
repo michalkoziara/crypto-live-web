@@ -1,19 +1,21 @@
 import * as React from 'react';
 import { Redirect, Route, RouteProps } from 'react-router';
+import { useCookies } from 'react-cookie';
 
 export interface ProtectedRouteProps extends RouteProps {
-    isAuthenticated: boolean;
     isAllowed: boolean;
     restrictedPath: string;
     authenticationPath: string;
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = (props) => {
+    const [cookies, ,] = useCookies(['token']);
+
     let redirectPath = '';
-    if (!props.isAuthenticated) {
+    if (!!cookies.token) {
         redirectPath = props.authenticationPath;
     }
-    if (props.isAuthenticated && !props.isAllowed) {
+    if (!!cookies.token && !props.isAllowed) {
         redirectPath = props.restrictedPath;
     }
 
