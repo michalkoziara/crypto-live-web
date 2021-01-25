@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=PT+Sans:400,700');
+
 .App {
     background: rgb(37,60,184);
     background: linear-gradient(180deg, rgba(37,60,184,1) 0%, rgba(41,121,255,1) 60%, rgba(108,172,254,1) 100%);
@@ -7,4 +9,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+    font-family: 'PT Sans', serif;
 }
