@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-const CryptoList: React.FC<{ data: Favorite[] }> = (props) => {
+const CryptoList: React.FC<{ data: Favorite[]; callback(favorite: Favorite): void }> = (props) => {
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(false);
@@ -68,9 +68,13 @@ const CryptoList: React.FC<{ data: Favorite[] }> = (props) => {
 
     const items = props.data.map((favorite) => {
         return (
-            <ListItem key={favorite.coinFromSymbol + favorite.coinToSymbol} button>
+            <ListItem
+                key={favorite.coinFromSymbol + favorite.coinToSymbol}
+                button
+                onClick={() => props.callback(favorite)}
+            >
                 <ListItemText
-                    primary={favorite.coinFromSymbol + favorite.coinToSymbol}
+                    primary={favorite.coinFromSymbol + ' – ' + favorite.coinToSymbol}
                     secondary={favorite.description}
                 />
                 <ListItemSecondaryAction>
@@ -113,6 +117,7 @@ const CryptoList: React.FC<{ data: Favorite[] }> = (props) => {
 
 CryptoList.propTypes = {
     data: PropTypes.any.isRequired,
+    callback: PropTypes.any.isRequired,
 };
 
 export default CryptoList;

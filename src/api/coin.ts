@@ -1,5 +1,5 @@
 interface Coin {
-    id: string;
+    id?: string;
     symbol: string;
 }
 

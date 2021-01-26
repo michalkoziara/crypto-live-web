@@ -62,8 +62,8 @@ const DashboardPage: React.FC = () => {
 
     const [time, setTime] = React.useState('');
     const [timeTick, setTimeTick] = React.useState(defaultTimeTickValue);
-    const [coinFromSymbol, setCoinFromSymbol] = React.useState('');
-    const [coinToSymbol, setCoinToSymbol] = React.useState('');
+    const [coinFrom, setCoinFrom] = React.useState<Coin | null>(null);
+    const [coinTo, setCoinTo] = React.useState<Coin | null>(null);
     const [coins, setCoins] = React.useState<Coin[]>([]);
     const [favorites, setFavorites] = React.useState<Favorite[]>([]);
     const [prices, setPrices] = React.useState<Price[]>([]);
@@ -79,19 +79,32 @@ const DashboardPage: React.FC = () => {
 
     const handleCoinFromSymbolChange = (_event: unknown, value: unknown) => {
         if (!!value) {
-            setCoinFromSymbol((value as { id: string; symbol: string }).symbol);
+            setCoinFrom(value as { id: string; symbol: string });
         } else {
-            setCoinFromSymbol('');
+            setCoinFrom(null);
             setPrices([]);
         }
     };
 
     const handleCoinToSymbolChange = (_event: unknown, value: unknown) => {
         if (!!value) {
-            setCoinToSymbol((value as { id: string; symbol: string }).symbol);
+            setCoinTo(value as { id: string; symbol: string });
         } else {
-            setCoinToSymbol('');
+            setCoinTo(null);
             setPrices([]);
+        }
+    };
+
+    const handleWatchlistClick = (favorite: Favorite) => {
+        const coinFromFavorite = coins.find((coin) => coin.symbol == favorite.coinFromSymbol);
+        const coinToFavorite = coins.find((coin) => coin.symbol == favorite.coinToSymbol);
+
+        if (!!coinFromFavorite) {
+            setCoinFrom(coinFromFavorite);
+        }
+
+        if (!!coinToFavorite) {
+            setCoinTo(coinToFavorite);
         }
     };
 
@@ -110,30 +123,26 @@ const DashboardPage: React.FC = () => {
                 .catch();
         }
 
-        if (
-            !isPriceUpdating &&
-            coinFromSymbol != null &&
-            coinFromSymbol != '' &&
-            coinToSymbol != null &&
-            coinToSymbol != ''
-        ) {
-            setIsPriceUpdating(true);
+        if (!isPriceUpdating && !!coinTo && !!coinFrom) {
             if (time == 'minutes') {
-                getMinutePrices(coinFromSymbol, coinToSymbol, timeTick)
+                setIsPriceUpdating(true);
+                getMinutePrices(coinFrom.symbol, coinTo.symbol, timeTick)
                     .then((result) => {
                         setPrices(result.data);
                         setIsPriceUpdating(false);
                     })
                     .catch();
             } else if (time == 'hours') {
-                getHourlyPrices(coinFromSymbol, coinToSymbol, timeTick)
+                setIsPriceUpdating(true);
+                getHourlyPrices(coinFrom.symbol, coinTo.symbol, timeTick)
                     .then((result) => {
                         setPrices(result.data);
                         setIsPriceUpdating(false);
                     })
                     .catch();
             } else if (time == 'days') {
-                getDailyPrices(coinFromSymbol, coinToSymbol, timeTick)
+                setIsPriceUpdating(true);
+                getDailyPrices(coinFrom.symbol, coinTo.symbol, timeTick)
                     .then((result) => {
                         setPrices(result.data);
                         setIsPriceUpdating(false);
@@ -183,16 +192,18 @@ const DashboardPage: React.FC = () => {
                                 <Autocomplete
                                     className={classes.formControl}
                                     onChange={handleCoinFromSymbolChange}
+                                    value={coinFrom}
                                     options={coins}
                                     getOptionLabel={(coin) => coin.symbol}
                                     renderInput={(params) => (
-                                        <TextField {...params} label="Currency that you exchange" variant="outlined" />
+                                        <TextField {...params} label="Currency that you sell" variant="outlined" />
                                     )}
                                 />
 
                                 <Autocomplete
                                     className={classes.formControl}
                                     onChange={handleCoinToSymbolChange}
+                                    value={coinTo}
                                     options={coins}
                                     getOptionLabel={(coin) => coin.symbol}
                                     renderInput={(params) => (
@@ -204,7 +215,7 @@ const DashboardPage: React.FC = () => {
                         <Grid item>
                             <Paper className={classes.paper}>
                                 <h3 className={classes.label}>Watchlist</h3>
-                                <CryptoList data={favorites} />
+                                <CryptoList data={favorites} callback={handleWatchlistClick} />
                             </Paper>
                         </Grid>
                     </Grid>
@@ -214,13 +225,15 @@ const DashboardPage: React.FC = () => {
                         {prices.length == 0 ? null : (
                             <div>
                                 <Button
-                                    onClick={() =>
-                                        saveFavorite({
-                                            coinToSymbol: coinToSymbol,
-                                            coinFromSymbol: coinFromSymbol,
-                                            description: 'test',
-                                        })
-                                    }
+                                    onClick={() => {
+                                        if (!!coinTo && !!coinFrom) {
+                                            saveFavorite({
+                                                coinToSymbol: coinTo?.symbol,
+                                                coinFromSymbol: coinFrom?.symbol,
+                                                description: 'test',
+                                            }).catch();
+                                        }
+                                    }}
                                     variant="contained"
                                     color="secondary"
                                     className={classes.favoriteButton}
