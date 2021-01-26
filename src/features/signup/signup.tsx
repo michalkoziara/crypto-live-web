@@ -7,6 +7,7 @@ import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import { registerUser } from '../../api/authentication';
 import { useIntl, defineMessages } from 'react-intl';
 import { useCookies } from 'react-cookie';
+import { useHistory } from 'react-router-dom';
 
 /// Default translations.
 const translations = defineMessages({
@@ -75,6 +76,7 @@ interface IFormStatusProps {
 const SignUp: React.FunctionComponent = () => {
     const intl = useIntl();
     const classes = useStyles();
+    const history = useHistory();
     const [, setCookie] = useCookies(['token']);
 
     const formStatusProps: IFormStatusProps = {
@@ -102,11 +104,12 @@ const SignUp: React.FunctionComponent = () => {
         setOpen(false);
     };
 
-    const createNewUser = async (data: ISignUpForm) => {
+    const signUpUser = async (data: ISignUpForm) => {
         registerUser({ username: data.username, password: data.password })
             .then((value) => {
                 setCookie('token', value.data, { path: '/', sameSite: 'strict', maxAge: 10 * 60 });
                 setFormStatus(formStatusProps.success);
+                history.push('/');
             })
             .catch(() => setFormStatus(formStatusProps.error))
             .finally(() => setOpen(true));
@@ -128,10 +131,9 @@ const SignUp: React.FunctionComponent = () => {
                     confirmPassword: '',
                 }}
                 onSubmit={(values: ISignUpForm, actions) => {
-                    createNewUser(values).then(() => actions.resetForm({}));
-                    setTimeout(() => {
-                        actions.setSubmitting(false);
-                    }, 500);
+                    signUpUser(values).then(() => {
+                        actions.resetForm({});
+                    });
                 }}
                 validationSchema={Yup.object().shape({
                     username: Yup.string().required(intl.formatMessage(translations.usernameValidationError)),
@@ -152,7 +154,7 @@ const SignUp: React.FunctionComponent = () => {
                 })}
             >
                 {(props: FormikProps<ISignUpForm>) => {
-                    const { values, touched, errors, handleBlur, handleChange, isSubmitting } = props;
+                    const { values, touched, errors, handleBlur, handleChange } = props;
                     return (
                         <Form>
                             <h1 className={classes.title}>{intl.formatMessage(translations.signUpTitle)}</h1>
@@ -209,7 +211,7 @@ const SignUp: React.FunctionComponent = () => {
                                     />
                                 </Grid>
                                 <Grid item lg={10} md={10} sm={10} xs={10} className={classes.submitButton}>
-                                    <Button type="submit" variant="contained" color="secondary" disabled={isSubmitting}>
+                                    <Button type="submit" variant="contained" color="secondary">
                                         {intl.formatMessage(translations.registrationButtonLabel)}
                                     </Button>
                                 </Grid>

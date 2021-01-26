@@ -1,18 +1,19 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import SignUpPage from '../features/signup/signup-page';
-import LoginPage from '../features/login/login-page';
-import DashboardPage from '../features/dashboard/dashboard-page';
-import ProtectedRoute, { ProtectedRouteProps } from '../components/protected-route';
-
-import './App.css';
-import PageBar from '../components/page-bar';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/core';
 import { blue } from '@material-ui/core/colors';
 
+import './App.css';
+import SignUpPage from '../features/signup/signup-page';
+import LoginPage from '../features/login/login-page';
+import DashboardPage from '../features/dashboard/dashboard-page';
+import ProtectedRoute from '../components/protected-route';
+import PageBar from '../components/page-bar';
+import LogoutPage from '../features/logout/logout-page';
+
 const App: React.FC = () => {
-    const defaultProtectedRouteProps: ProtectedRouteProps = {
+    const defaultProtectedRouteProps = {
         isAllowed: true,
         restrictedPath: '/login',
         authenticationPath: '/login',
@@ -39,6 +40,9 @@ const App: React.FC = () => {
                             </Route>
                             <Route path="/login">
                                 <LoginPage />
+                            </Route>
+                            <Route path="/logout">
+                                <LogoutPage />
                             </Route>
                             <ProtectedRoute
                                 {...defaultProtectedRouteProps}

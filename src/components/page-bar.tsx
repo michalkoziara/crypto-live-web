@@ -13,6 +13,7 @@ const translations = defineMessages({
     registrationTitle: 'Registration',
     loginButtonLabel: 'Sign In',
     dashboardTitle: 'Dashboard',
+    logoutButtonLabel: 'Log out',
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -53,6 +54,12 @@ const PageBar: React.FC = () => {
     } else {
         title = intl.formatMessage(translations.dashboardTitle);
         content = null;
+
+        content = (
+            <Button color="inherit" component={Link} to="/logout">
+                {intl.formatMessage(translations.logoutButtonLabel)}
+            </Button>
+        );
     }
 
     return (

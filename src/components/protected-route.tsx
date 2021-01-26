@@ -1,30 +1,66 @@
 import * as React from 'react';
-import { Redirect, Route, RouteProps } from 'react-router';
+import { Redirect, Route, RouteProps, useHistory, useRouteMatch, useLocation } from 'react-router';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 
-export interface ProtectedRouteProps extends RouteProps {
+interface ProtectedRouteProps extends RouteProps {
     isAllowed: boolean;
     restrictedPath: string;
     authenticationPath: string;
+    test?: boolean;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = (props) => {
-    const [cookies, ,] = useCookies(['token']);
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ component: Component, ...props }) => {
+    if (!Component) return null;
 
-    let redirectPath = '';
-    if (!!cookies.token) {
-        redirectPath = props.authenticationPath;
-    }
-    if (!!cookies.token && !props.isAllowed) {
-        redirectPath = props.restrictedPath;
-    }
+    const history = useHistory();
+    const routeMatch = useRouteMatch();
+    const location = useLocation();
 
-    if (redirectPath) {
-        const renderComponent = () => <Redirect to={{ pathname: redirectPath }} />;
-        return <Route {...props} component={renderComponent} render={undefined} />;
-    } else {
-        return <Route {...props} />;
-    }
+    const [cookies] = useCookies(['token']);
+    const [redirectPath, setRedirectPath] = useState(() => {
+        if (!cookies.token) {
+            return props.authenticationPath;
+        }
+        if (!!cookies.token && !props.isAllowed) {
+            return props.restrictedPath;
+        }
+    });
+
+    useEffect(() => {
+        setRedirectPath('');
+
+        if (!cookies.token) {
+            setRedirectPath(props.authenticationPath);
+        }
+        if (!!cookies.token && !props.isAllowed) {
+            setRedirectPath(props.restrictedPath);
+        }
+    });
+
+    return (
+        <Route
+            {...props}
+            render={() => {
+                if (redirectPath == '') {
+                    return <Component history={history} match={routeMatch} location={location} />;
+                } else {
+                    return <Redirect to={{ pathname: redirectPath, state: { from: props.location } }} />;
+                }
+            }}
+        />
+    );
+};
+
+ProtectedRoute.propTypes = {
+    isAllowed: PropTypes.bool.isRequired,
+    restrictedPath: PropTypes.string.isRequired,
+    authenticationPath: PropTypes.string.isRequired,
+    test: PropTypes.bool,
+    component: PropTypes.any,
+    location: PropTypes.any,
 };
 
 export default ProtectedRoute;
+export type { ProtectedRouteProps };

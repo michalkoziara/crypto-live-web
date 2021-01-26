@@ -5,6 +5,9 @@ import * as Yup from 'yup';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import { useIntl, defineMessages } from 'react-intl';
+import { loginUser } from '../../api/authentication';
+import { useCookies } from 'react-cookie';
+import { useHistory } from 'react-router-dom';
 
 /// Default translations.
 const translations = defineMessages({
@@ -67,6 +70,8 @@ interface IFormStatusProps {
 const Login: React.FunctionComponent = () => {
     const intl = useIntl();
     const classes = useStyles();
+    const history = useHistory();
+    const [, setCookie] = useCookies(['token']);
 
     const formStatusProps: IFormStatusProps = {
         success: {
@@ -93,19 +98,15 @@ const Login: React.FunctionComponent = () => {
         setOpen(false);
     };
 
-    const createNewUser = async (data: ILoginForm) => {
-        try {
-            if (data) {
+    const signInUser = async (data: ILoginForm) => {
+        loginUser({ username: data.username, password: data.password })
+            .then((value) => {
+                setCookie('token', value.data, { path: '/', sameSite: 'strict', maxAge: 10 * 60 });
                 setFormStatus(formStatusProps.success);
-            }
-        } catch (error) {
-            const response = error.response;
-            if (response.status !== 200) {
-                setFormStatus(formStatusProps.error);
-            }
-        } finally {
-            setOpen(true);
-        }
+                history.push('/');
+            })
+            .catch(() => setFormStatus(formStatusProps.error))
+            .finally(() => setOpen(true));
     };
 
     return (
@@ -123,10 +124,9 @@ const Login: React.FunctionComponent = () => {
                     password: '',
                 }}
                 onSubmit={(values: ILoginForm, actions) => {
-                    createNewUser(values).then(() => actions.resetForm({}));
-                    setTimeout(() => {
-                        actions.setSubmitting(false);
-                    }, 500);
+                    signInUser(values).then(() => {
+                        actions.resetForm({});
+                    });
                 }}
                 validationSchema={Yup.object().shape({
                     username: Yup.string().required(intl.formatMessage(translations.usernameValidationError)),
@@ -134,7 +134,7 @@ const Login: React.FunctionComponent = () => {
                 })}
             >
                 {(props: FormikProps<ILoginForm>) => {
-                    const { values, touched, errors, handleBlur, handleChange, isSubmitting } = props;
+                    const { values, touched, errors, handleBlur, handleChange } = props;
                     return (
                         <Form>
                             <h1 className={classes.title}>{intl.formatMessage(translations.loginTitle)}</h1>
@@ -174,7 +174,7 @@ const Login: React.FunctionComponent = () => {
                                     />
                                 </Grid>
                                 <Grid item lg={10} md={10} sm={10} xs={10} className={classes.submitButton}>
-                                    <Button type="submit" variant="contained" color="secondary" disabled={isSubmitting}>
+                                    <Button type="submit" variant="contained" color="secondary">
                                         {intl.formatMessage(translations.loginButtonLabel)}
                                     </Button>
                                 </Grid>

@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
+import './header-interceptor';
 
 interface User {
     username: string;
@@ -23,4 +24,10 @@ const loginUser = async ({ username, password }: User): Promise<AxiosResponse> =
     });
 };
 
-export { registerUser, loginUser };
+const logoutUser = async (): Promise<AxiosResponse> => {
+    const url = '/users/logout';
+
+    return await axios.get(url);
+};
+
+export { registerUser, loginUser, logoutUser };
