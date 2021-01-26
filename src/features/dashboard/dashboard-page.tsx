@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -14,6 +14,9 @@ import Button from '@material-ui/core/Button';
 import StarIcon from '@material-ui/icons/Star';
 import { getCoins } from '../../api/coins-api';
 import { Coin } from '../../api/coin';
+import { getDailyPrices, getHourlyPrices, getMinutePrices } from '../../api/prices-api';
+import { Price } from '../../api/price';
+import { Slider, Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,13 +30,17 @@ const useStyles = makeStyles((theme) => ({
     container: {
         height: '90vh',
     },
-    innerContainer: {
-        height: '100%',
-    },
     formControl: {
         margin: theme.spacing(1),
         paddingBottom: '10px',
         minWidth: 300,
+    },
+    slider: {
+        width: '90%',
+        display: 'flex',
+        margin: 'auto',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     label: {
         textAlign: 'center',
@@ -41,46 +48,76 @@ const useStyles = makeStyles((theme) => ({
     favoriteButton: {
         marginBottom: 10,
     },
+    height: {
+        height: '100%',
+    },
 }));
 
 const DashboardPage: React.FC = () => {
     const classes = useStyles();
 
+    const defaultTimeTickValue = 30;
+
     const [time, setTime] = React.useState('');
+    const [timeTick, setTimeTick] = React.useState(defaultTimeTickValue);
     const [coinFromSymbol, setCoinFromSymbol] = React.useState('');
     const [coinToSymbol, setCoinToSymbol] = React.useState('');
     const [coins, setCoins] = React.useState<Coin[]>([]);
-
-    const isMountedRef = useRef(true);
+    const [prices, setPrices] = React.useState<Price[]>([]);
+    const [isPriceUpdating, setIsPriceUpdating] = React.useState(false);
 
     const handleTimeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         setTime(event.target.value as string);
     };
 
+    const handleTimeTicksChange = (_event: unknown, newValue: unknown) => {
+        setTimeTick(newValue as number);
+    };
+
     const handleCoinFromSymbolChange = (_event: unknown, value: unknown) => {
         if (!!value) {
-            setCoinFromSymbol((value as { title: string; year: number }).title);
+            setCoinFromSymbol((value as { id: string; symbol: string }).symbol);
         }
     };
 
     const handleCoinToSymbolChange = (_event: unknown, value: unknown) => {
         if (!!value) {
-            setCoinToSymbol((value as { title: string; year: number }).title);
+            setCoinToSymbol((value as { id: string; symbol: string }).symbol);
         }
     };
 
     useEffect(() => {
         if (coins.length == 0) {
             getCoins().then((result) => {
-                if (isMountedRef.current) {
-                    setCoins(result.data);
-                }
+                setCoins(result.data);
             });
         }
 
-        return () => {
-            isMountedRef.current = false;
-        };
+        if (
+            !isPriceUpdating &&
+            coinFromSymbol != null &&
+            coinFromSymbol != '' &&
+            coinToSymbol != null &&
+            coinToSymbol != ''
+        ) {
+            setIsPriceUpdating(true);
+            if (time == 'minutes') {
+                getMinutePrices(coinFromSymbol, coinToSymbol, timeTick).then((result) => {
+                    setPrices(result.data);
+                    setIsPriceUpdating(false);
+                });
+            } else if (time == 'hours') {
+                getHourlyPrices(coinFromSymbol, coinToSymbol, timeTick).then((result) => {
+                    setPrices(result.data);
+                    setIsPriceUpdating(false);
+                });
+            } else if (time == 'days') {
+                getDailyPrices(coinFromSymbol, coinToSymbol, timeTick).then((result) => {
+                    setPrices(result.data);
+                    setIsPriceUpdating(false);
+                });
+            }
+        }
     });
 
     return (
@@ -90,59 +127,80 @@ const DashboardPage: React.FC = () => {
                     <Grid spacing={3} direction="column" className={classes.container} container>
                         <Grid item>
                             <Paper className={classes.paper}>
-                                <h3 className={classes.label}>Waluta</h3>
+                                <h3 className={classes.label}>Coins</h3>
 
                                 <FormControl className={classes.formControl}>
-                                    <InputLabel>Okres czasu</InputLabel>
+                                    <InputLabel>Period of time</InputLabel>
                                     <Select value={time} onChange={handleTimeChange}>
-                                        <MenuItem value={'minutes'}>Minutowy</MenuItem>
-                                        <MenuItem value={'hours'}>Godzinowy</MenuItem>
-                                        <MenuItem value={'days'}>Dniowy</MenuItem>
+                                        <MenuItem value={'minutes'}>Minutes</MenuItem>
+                                        <MenuItem value={'hours'}>Hours</MenuItem>
+                                        <MenuItem value={'days'}>Days</MenuItem>
                                     </Select>
                                 </FormControl>
+
+                                {time == '' ? null : (
+                                    <div>
+                                        <Typography className={classes.slider} gutterBottom>
+                                            Number of {time}
+                                        </Typography>
+                                        <Slider
+                                            className={classes.slider}
+                                            defaultValue={30}
+                                            aria-labelledby="discrete-slider"
+                                            valueLabelDisplay="auto"
+                                            step={10}
+                                            marks
+                                            min={10}
+                                            max={100}
+                                            onChange={handleTimeTicksChange}
+                                        />
+                                    </div>
+                                )}
 
                                 <Autocomplete
                                     className={classes.formControl}
                                     onChange={handleCoinFromSymbolChange}
-                                    inputValue={coinFromSymbol}
                                     options={coins}
                                     getOptionLabel={(coin) => coin.symbol}
                                     renderInput={(params) => (
-                                        <TextField {...params} label="Sprzedawana waluta" variant="outlined" />
+                                        <TextField {...params} label="Currency that you exchange" variant="outlined" />
                                     )}
                                 />
 
                                 <Autocomplete
                                     className={classes.formControl}
                                     onChange={handleCoinToSymbolChange}
-                                    inputValue={coinToSymbol}
                                     options={coins}
                                     getOptionLabel={(coin) => coin.symbol}
                                     renderInput={(params) => (
-                                        <TextField {...params} label="Kupowana waluta" variant="outlined" />
+                                        <TextField {...params} label="Currency that you buy" variant="outlined" />
                                     )}
                                 />
                             </Paper>
                         </Grid>
                         <Grid item>
                             <Paper className={classes.paper}>
-                                <h3 className={classes.label}>Lista obserwowanych</h3>
+                                <h3 className={classes.label}>Watchlist</h3>
                                 <CryptoList />
                             </Paper>
                         </Grid>
                     </Grid>
                 </Grid>
                 <Grid xs={8} item>
-                    <Paper className={classes.paper}>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            className={classes.favoriteButton}
-                            startIcon={<StarIcon aria-label="favorite" style={{ color: 'yellow' }} />}
-                        >
-                            Dodaj do obserwowanych
-                        </Button>
-                        <CryptoChart />
+                    <Paper className={`${classes.paper} ${classes.height}`}>
+                        {prices.length == 0 ? null : (
+                            <div>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    className={classes.favoriteButton}
+                                    startIcon={<StarIcon aria-label="favorite" style={{ color: 'yellow' }} />}
+                                >
+                                    Add to watchlist
+                                </Button>
+                            </div>
+                        )}
+                        <CryptoChart data={prices} />
                     </Paper>
                 </Grid>
             </Grid>
