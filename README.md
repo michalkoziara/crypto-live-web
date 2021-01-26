@@ -1,46 +1,55 @@
-# Getting Started with Create React App
+# CryptoLive
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Web application for tracking cryptocurrency prices
 
-## Available Scripts
+The goal of this project is to implement web application that serves as a user interface for tracking cryptocurrency prices.
 
-In the project directory, you can run:
+This repository contains only source code related to the web application. 
+Additional RESTful API web service is responsible for managing and storing user's data in database 
+and redirecting data related to cryptocurrencies from external sources 
+can be found in the following repository https://github.com/michalkoziara/crypto-live-service.
 
-### `npm start`
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Getting Started
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+These instructions will get you a copy of the project up and running on 
+your local machine for development and testing purposes.
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* Node.js [15.5.0 or above] - https://nodejs.org/
+* npm [7.3.0 or above] - https://www.npmjs.com/
 
-### `npm run build`
+Detailed information about installation and configurations are provided at developers' site.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Technology Stack
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+* React.js [17.0.1]
+* TypeScript
+* Material-UI
+* ApexCharts
+* JSON Web Token
+* axios
+* yup
+* formik
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Build 
 
-### `npm run eject`
+A step by step instruction [on Windows 10]:
+* Navigate to project directory in Command Prompt (cmd).
+* Use ``npm`` to start the application.
+  ```
+  npm start
+  ```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+The application should be running, you can check that by visiting http://localhost:3000/ in your browser.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+In order to access all functionalities of the application you should also start the web service.
+Detailed information about can be found in the following repository https://github.com/michalkoziara/crypto-live-service.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Please notice that by default the application is proxied to port 8080 to maintain connection with the web service with disabled CORS mechanism.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Author
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+* **Michał Koziara** 
