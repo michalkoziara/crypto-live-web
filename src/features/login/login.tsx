@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Grid, TextField, Button, makeStyles, createStyles } from '@material-ui/core';
-import { Formik, Form, FormikProps } from 'formik';
+import { Button, createStyles, Grid, makeStyles, TextField } from '@material-ui/core';
+import { Form, Formik, FormikProps } from 'formik';
 import * as Yup from 'yup';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
-import { useIntl, defineMessages } from 'react-intl';
+import { defineMessages, useIntl } from 'react-intl';
 import { loginUser } from '../../api/authentication';
 import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router-dom';

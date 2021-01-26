@@ -12,11 +12,11 @@ import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import StarIcon from '@material-ui/icons/Star';
+import { Modal, Slider, TextareaAutosize, Typography } from '@material-ui/core';
 import { getCoins } from '../../api/coins-api';
 import { Coin } from '../../api/coin';
 import { getDailyPrices, getHourlyPrices, getMinutePrices } from '../../api/prices-api';
 import { Price } from '../../api/price';
-import { Modal, Slider, TextareaAutosize, Typography } from '@material-ui/core';
 import { getFavorites, saveFavorite } from '../../api/favorite-api';
 import { Favorite } from '../../api/favorite';
 

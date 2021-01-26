@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Redirect, Route, RouteProps, useHistory, useRouteMatch, useLocation } from 'react-router';
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import { Redirect, Route, RouteProps, useHistory, useLocation, useRouteMatch } from 'react-router';
+import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
 
 interface ProtectedRouteProps extends RouteProps {
