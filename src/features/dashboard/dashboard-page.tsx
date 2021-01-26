@@ -16,7 +16,7 @@ import { getCoins } from '../../api/coins-api';
 import { Coin } from '../../api/coin';
 import { getDailyPrices, getHourlyPrices, getMinutePrices } from '../../api/prices-api';
 import { Price } from '../../api/price';
-import { Slider, Typography } from '@material-ui/core';
+import { Modal, Slider, TextareaAutosize, Typography } from '@material-ui/core';
 import { getFavorites, saveFavorite } from '../../api/favorite-api';
 import { Favorite } from '../../api/favorite';
 
@@ -53,6 +53,25 @@ const useStyles = makeStyles((theme) => ({
     height: {
         height: '100%',
     },
+    center: {
+        display: 'flex',
+        height: '100%',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingBottom: '10px',
+    },
+    modal: {
+        top: '50%',
+        left: '50%',
+        transform: `translate(-50%, -50%)`,
+        position: 'absolute',
+        width: 400,
+        backgroundColor: theme.palette.background.paper,
+        border: '0px solid #FFF',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3),
+    },
 }));
 
 const DashboardPage: React.FC = () => {
@@ -65,6 +84,10 @@ const DashboardPage: React.FC = () => {
     const [coinFrom, setCoinFrom] = React.useState<Coin | null>(null);
     const [coinTo, setCoinTo] = React.useState<Coin | null>(null);
     const [coins, setCoins] = React.useState<Coin[]>([]);
+
+    const [open, setOpen] = React.useState(false);
+    const [favorite, setFavorite] = React.useState<Favorite | null>(null);
+
     const [favorites, setFavorites] = React.useState<Favorite[]>([]);
     const [prices, setPrices] = React.useState<Price[]>([]);
     const [isPriceUpdating, setIsPriceUpdating] = React.useState(false);
@@ -108,17 +131,48 @@ const DashboardPage: React.FC = () => {
         }
     };
 
-    useEffect(() => {
-        getFavorites()
-            .then((result) => {
-                setFavorites(result.data);
-            })
-            .catch();
+    const handleWatchlistChange = (favorites: Favorite[]) => {
+        setFavorites(favorites);
+    };
 
+    const handleOpen = (favorite: Favorite) => {
+        setOpen(true);
+        setFavorite(favorite);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+
+        if (!!favorite) {
+            saveFavorite({
+                coinToSymbol: favorite.coinToSymbol,
+                coinFromSymbol: favorite.coinFromSymbol,
+                description: favorite.description,
+            })
+                .catch()
+                .then(() =>
+                    getFavorites()
+                        .then((result) => {
+                            setFavorites(result.data);
+                        })
+                        .catch(),
+                );
+        }
+
+        setFavorite(null);
+    };
+
+    useEffect(() => {
         if (coins.length == 0) {
             getCoins()
                 .then((result) => {
                     setCoins(result.data);
+                })
+                .catch();
+
+            getFavorites()
+                .then((result) => {
+                    setFavorites(result.data);
                 })
                 .catch();
         }
@@ -215,7 +269,11 @@ const DashboardPage: React.FC = () => {
                         <Grid item>
                             <Paper className={classes.paper}>
                                 <h3 className={classes.label}>Watchlist</h3>
-                                <CryptoList data={favorites} callback={handleWatchlistClick} />
+                                <CryptoList
+                                    data={favorites}
+                                    callback={handleWatchlistClick}
+                                    callbackOnChange={handleWatchlistChange}
+                                />
                             </Paper>
                         </Grid>
                     </Grid>
@@ -227,11 +285,12 @@ const DashboardPage: React.FC = () => {
                                 <Button
                                     onClick={() => {
                                         if (!!coinTo && !!coinFrom) {
-                                            saveFavorite({
+                                            const newFavorite = {
                                                 coinToSymbol: coinTo?.symbol,
                                                 coinFromSymbol: coinFrom?.symbol,
-                                                description: 'test',
-                                            }).catch();
+                                                description: '',
+                                            };
+                                            handleOpen(newFavorite);
                                         }
                                     }}
                                     variant="contained"
@@ -247,6 +306,25 @@ const DashboardPage: React.FC = () => {
                     </Paper>
                 </Grid>
             </Grid>
+            <Modal open={open} onClose={handleClose}>
+                <div className={classes.modal}>
+                    <h3 className={classes.center}>Add description</h3>
+                    <TextareaAutosize
+                        className={classes.center}
+                        rowsMax={4}
+                        rowsMin={4}
+                        onChange={(event) => {
+                            const changedFavorite = favorite;
+
+                            if (!!changedFavorite) {
+                                changedFavorite.description = event.target.value as string;
+                                setFavorite(changedFavorite);
+                            }
+                        }}
+                        defaultValue={favorite?.description}
+                    />
+                </div>
+            </Modal>
         </div>
     );
 };

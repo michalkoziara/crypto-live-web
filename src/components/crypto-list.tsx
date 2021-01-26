@@ -7,7 +7,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { Favorite } from '../api/favorite';
 import PropTypes from 'prop-types';
-import { deleteFavorite, updateFavorite } from '../api/favorite-api';
+import { deleteFavorite, getFavorites, updateFavorite } from '../api/favorite-api';
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -37,7 +37,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-const CryptoList: React.FC<{ data: Favorite[]; callback(favorite: Favorite): void }> = (props) => {
+const CryptoList: React.FC<{
+    data: Favorite[];
+    callback(favorite: Favorite): void;
+    callbackOnChange(favorites: Favorite[]): void;
+}> = (props) => {
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(false);
@@ -52,7 +56,13 @@ const CryptoList: React.FC<{ data: Favorite[]; callback(favorite: Favorite): voi
         setOpen(false);
 
         if (!!favorite) {
-            updateFavorite(favorite).catch();
+            updateFavorite(favorite)
+                .catch()
+                .then(() =>
+                    getFavorites()
+                        .catch()
+                        .then((result) => props.callbackOnChange(result.data)),
+                );
         }
 
         setFavorite(null);
@@ -81,7 +91,19 @@ const CryptoList: React.FC<{ data: Favorite[]; callback(favorite: Favorite): voi
                     <IconButton edge="end" aria-label="edit" onClick={() => handleOpen(favorite)}>
                         <EditIcon />
                     </IconButton>
-                    <IconButton edge="end" aria-label="delete" onClick={() => deleteFavorite(favorite)}>
+                    <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => {
+                            deleteFavorite(favorite)
+                                .catch()
+                                .then(() =>
+                                    getFavorites()
+                                        .catch()
+                                        .then((result) => props.callbackOnChange(result.data)),
+                                );
+                        }}
+                    >
                         <DeleteIcon />
                     </IconButton>
                 </ListItemSecondaryAction>
@@ -118,6 +140,7 @@ const CryptoList: React.FC<{ data: Favorite[]; callback(favorite: Favorite): voi
 CryptoList.propTypes = {
     data: PropTypes.any.isRequired,
     callback: PropTypes.any.isRequired,
+    callbackOnChange: PropTypes.any.isRequired,
 };
 
 export default CryptoList;
