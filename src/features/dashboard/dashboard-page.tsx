@@ -17,6 +17,8 @@ import { Coin } from '../../api/coin';
 import { getDailyPrices, getHourlyPrices, getMinutePrices } from '../../api/prices-api';
 import { Price } from '../../api/price';
 import { Slider, Typography } from '@material-ui/core';
+import { getFavorites, saveFavorite } from '../../api/favorite-api';
+import { Favorite } from '../../api/favorite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -63,6 +65,7 @@ const DashboardPage: React.FC = () => {
     const [coinFromSymbol, setCoinFromSymbol] = React.useState('');
     const [coinToSymbol, setCoinToSymbol] = React.useState('');
     const [coins, setCoins] = React.useState<Coin[]>([]);
+    const [favorites, setFavorites] = React.useState<Favorite[]>([]);
     const [prices, setPrices] = React.useState<Price[]>([]);
     const [isPriceUpdating, setIsPriceUpdating] = React.useState(false);
 
@@ -77,20 +80,34 @@ const DashboardPage: React.FC = () => {
     const handleCoinFromSymbolChange = (_event: unknown, value: unknown) => {
         if (!!value) {
             setCoinFromSymbol((value as { id: string; symbol: string }).symbol);
+        } else {
+            setCoinFromSymbol('');
+            setPrices([]);
         }
     };
 
     const handleCoinToSymbolChange = (_event: unknown, value: unknown) => {
         if (!!value) {
             setCoinToSymbol((value as { id: string; symbol: string }).symbol);
+        } else {
+            setCoinToSymbol('');
+            setPrices([]);
         }
     };
 
     useEffect(() => {
+        getFavorites()
+            .then((result) => {
+                setFavorites(result.data);
+            })
+            .catch();
+
         if (coins.length == 0) {
-            getCoins().then((result) => {
-                setCoins(result.data);
-            });
+            getCoins()
+                .then((result) => {
+                    setCoins(result.data);
+                })
+                .catch();
         }
 
         if (
@@ -102,20 +119,26 @@ const DashboardPage: React.FC = () => {
         ) {
             setIsPriceUpdating(true);
             if (time == 'minutes') {
-                getMinutePrices(coinFromSymbol, coinToSymbol, timeTick).then((result) => {
-                    setPrices(result.data);
-                    setIsPriceUpdating(false);
-                });
+                getMinutePrices(coinFromSymbol, coinToSymbol, timeTick)
+                    .then((result) => {
+                        setPrices(result.data);
+                        setIsPriceUpdating(false);
+                    })
+                    .catch();
             } else if (time == 'hours') {
-                getHourlyPrices(coinFromSymbol, coinToSymbol, timeTick).then((result) => {
-                    setPrices(result.data);
-                    setIsPriceUpdating(false);
-                });
+                getHourlyPrices(coinFromSymbol, coinToSymbol, timeTick)
+                    .then((result) => {
+                        setPrices(result.data);
+                        setIsPriceUpdating(false);
+                    })
+                    .catch();
             } else if (time == 'days') {
-                getDailyPrices(coinFromSymbol, coinToSymbol, timeTick).then((result) => {
-                    setPrices(result.data);
-                    setIsPriceUpdating(false);
-                });
+                getDailyPrices(coinFromSymbol, coinToSymbol, timeTick)
+                    .then((result) => {
+                        setPrices(result.data);
+                        setIsPriceUpdating(false);
+                    })
+                    .catch();
             }
         }
     });
@@ -181,7 +204,7 @@ const DashboardPage: React.FC = () => {
                         <Grid item>
                             <Paper className={classes.paper}>
                                 <h3 className={classes.label}>Watchlist</h3>
-                                <CryptoList />
+                                <CryptoList data={favorites} />
                             </Paper>
                         </Grid>
                     </Grid>
@@ -191,6 +214,13 @@ const DashboardPage: React.FC = () => {
                         {prices.length == 0 ? null : (
                             <div>
                                 <Button
+                                    onClick={() =>
+                                        saveFavorite({
+                                            coinToSymbol: coinToSymbol,
+                                            coinFromSymbol: coinFromSymbol,
+                                            description: 'test',
+                                        })
+                                    }
                                     variant="contained"
                                     color="secondary"
                                     className={classes.favoriteButton}
