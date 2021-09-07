@@ -7,7 +7,7 @@ The goal of this project is to implement web application that serves as a user i
 This repository contains only source code related to the web application. 
 Additional RESTful API web service is responsible for managing and storing user's data in database 
 and redirecting data related to cryptocurrencies from external sources 
-can be found in the following repository https://github.com/michalkoziara/crypto-live-service.
+can be found in the [michalkoziara/crypto-live-service](https://github.com/michalkoziara/crypto-live-service) repository.
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
