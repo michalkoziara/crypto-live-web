@@ -38,10 +38,7 @@ Detailed information about installation and configurations are provided at devel
 
 A step by step instruction [on Windows 10]:
 * Navigate to project directory in Command Prompt (cmd).
-* Use ``npm`` to start the application.
-  ```
-  npm start
-  ```
+* Use ```npm start``` to start the application.
 
 The application should be running, you can check that by visiting http://localhost:3000/ in your browser.
 
@@ -49,6 +46,21 @@ In order to access all functionalities of the application you should also start 
 Detailed information about can be found in the following repository https://github.com/michalkoziara/crypto-live-service.
 
 Please notice that by default the application is proxied to port 8080 to maintain connection with the web service with disabled CORS mechanism.
+
+## Preview
+
+<table>
+    <tr>
+        <td>
+            <p>Login</p>
+            <img src="images/img_1.png" alt="login" title="Login">
+        </td>
+              <td>
+            <p>Dashboard</p>
+            <img src="images/img_2.png" alt="dashboard" title="Dashboard">
+        </td>
+    </tr>
+</table>
 
 ## Author
 
